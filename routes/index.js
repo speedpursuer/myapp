@@ -10,8 +10,8 @@ var router = express.Router();
 // });
 
 /* GET home page. */
-router.get('/:id', function(req, res, next) {
-    console.log("id = " + req.params.id);
+router.get('/share/:id', function(req, res, next) {
+    // console.log("id = " + req.params.id);
     var serverURL = 'http://121.40.197.226:8000/eservice/';
     // var docID = 'article_14a8f67e7501408d9dbbd90483c34d16_2017-05-02-15:24:39';
     var docID = req.params.id;
@@ -39,7 +39,7 @@ router.get('/:id', function(req, res, next) {
             if(doc.error) {
                 // res.send('此页面不存在');
                 res.render('error', {
-                    message: 'Page Not Found',
+                    message: '此页面不存在',
                     error: {}
                 });
                 return;
@@ -61,6 +61,8 @@ router.get('/:id', function(req, res, next) {
             // }
 
             res.render('index', {
+                thumb: 'http://eserviceimg.oss-cn-shanghai.aliyuncs.com/'+doc.thumbURL+'.jpg',
+                url: req.protocol + '://' + 'www.carlub.cn' + req.originalUrl,
 		        title: doc.title,
 		        contents: doc.entryList
 		    });

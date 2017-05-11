@@ -1,12 +1,69 @@
 extends layout
 
 block content
+
+  script.
+    $(document).ready(function(){
+      $.ajax({
+        url: 'http://www.carlub.cn/sign',
+        type: 'GET',
+        error: function(err){
+          console.log('error: ', err);
+          //alert('从服务器获取签名失败');
+        },
+        success: function(data, status){
+          console.log('status, data: ', status, data);          
+          //alert('成功获取签名');
+          
+          wx.config({
+            // debug: true,
+            appId: data.appId,
+            timestamp: data.timestamp,
+            nonceStr: data.nonceStr,
+            signature: data.signature,
+            jsApiList: ['onMenuShareTimeline', 'onMenuShareAppMessage']
+          });
+        }
+      });    
+    });
+
+    wx.ready(function(e, x){      
+      wx.onMenuShareTimeline({
+        title: '#{title}',
+        desc: '由「小店长APP」制作',
+        link: '#{url}',
+        imgUrl: '#{thumb}',
+        success: function () {
+          //alert("分享成功");
+        },
+        cancel: function(){
+          //alert("用户取消了分享");          
+        }
+      });
+
+      wx.onMenuShareAppMessage({
+        title: '#{title}',
+        desc: '由「小店长APP」制作',
+        link: '#{url}',
+        imgUrl: '#{thumb}',
+        success: function () {
+          //alert("分享成功");
+        },
+        cancel: function(){
+          //alert("用户取消了分享");          
+        }
+      });
+    });
+    
+    wx.error(function(e, x){
+      console.log('wx.error, e, x: ', e, x);
+    });
   
-  div(style="border: 0px none; padding: 0px; position: relative;")
+
+  div(style="padding:10px 12px 30px 12px;")
   
-  div(style="padding:10px 10px;")
-  
-   div(style="font-size:86px; color:#00b0bb; font-weight:bold; text-align:center;")=title
+   div(style="font-size:86px; color:#00b0bb; font-weight:bold; text-align:center;")
+    h1(style="margin-bottom: 0px; margin-top: 0px; font-size: 1em;")=title
   
    div(style="text-align:center;line-height: 8px;")
   
@@ -14,19 +71,18 @@ block content
   
     div(style="display:inline-block; border-top:solid 4px #444; width:200px; margin-left:10px;")
 
-  p
-   br
+  
 
   each content, i in contents
 
-   div(style="width:100%; border: 0px none; padding: 0px; position: relative; padding-bottom:10px;")
+   div(style="border: 0px none; padding: 0px; position: relative; padding-bottom:12px; padding-left:12px; padding-right:12px; padding-top:8px;")
    
     div(style="height:auto; overflow:hidden; padding-bottom:0px;")    
    
      div(style="width:100%;")
 
       if (content.desc)
-        p(style="font-size:3rem; color:#736F6E; margin-left: 0px;margin-right: 0px;line-height: 2em;margin-top: 20px;margin-bottom: 0px;")=content.desc
+        p(style="font-size:3rem; color:#736F6E; margin-left: 0px;margin-right: 0px;line-height: 2em;margin-top: 10px;margin-bottom: 0px;")=content.desc
 
       if (content.imageURL)
         img(style="width:100%; display:block;", src='http://eserviceimg.oss-cn-shanghai.aliyuncs.com/'+content.imageURL+'.jpg')         
