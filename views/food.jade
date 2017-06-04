@@ -1,13 +1,11 @@
-extends layout
+extends layoutFood
 
 block content
 
   script.
-    var desc = "分享自「小店长APP」";   
-    var hasShop = false; 
+    var desc = "分享自「#{rest.name}」的美食";   
 
-    $(document).ready(function(){      
-      //if(hasShop) adaptSize();
+    $(document).ready(function(){
       $.ajax({
         url: 'http://www.carlub.cn/sign',
         type: 'GET',
@@ -99,23 +97,8 @@ block content
       if (content.imageURL)
         img(style="width:100%; display:block;", src='http://cdn.carlub.cn/'+content.imageURL+'.jpg')       
 
-  if (shop && shopEnabled)
-    script.         
-      hasShop = true; 
-      desc = "分享自「#{shop.name}」";
-
-      function adaptSize() {
-        var width = $(window).width() - 40; 
-        var height = parseInt(width * 9 /16); 
-        var mapWidth = parseInt(width/2);
-        var mapHeight = parseInt(height/2);
-        
-        window.parent.document.getElementById("mapPage").width = width;
-        window.parent.document.getElementById("mapPage").height = height;
-
-        $("#mapPage").attr("src", "http://apis.map.qq.com/ws/staticmap/v2/?center=#{shop.lat},#{shop.lng}&zoom=11&markers=size:large|color:red|#{shop.lat},#{shop.lng}&key=EEQBZ-YXG3D-AL643-PPLVA-2GRW5-K6BQY&scale=2&size="+mapWidth+"*"+mapHeight);
-      }
-
+  if (rest)
+    
     div(style="text-align:center;line-height: 8px; margin-top: 4em; margin-bottom: 2.5em;")
   
       div(style="display:inline-block; border-top:solid 8px #987cb9; width:20%;")          
@@ -124,18 +107,12 @@ block content
 
     div(style="border: 0px none; padding: 0px; position: relative; padding-bottom:12px; padding-left:12px; padding-right:12px; padding-top:12px;")
 
-      img(style="width:100%; display:block;" src='http://cdn.carlub.cn/'+shop.avatarURL+'.jpg')
-
       p(style="font-size:3.5rem; color:#736F6E; margin-left: 0px;margin-right: 0px;line-height: 2em;margin-top: 20px;margin-bottom: 20px; text-align: center; font-weight: 900;").
-        「#{shop.name}」<br/>
+        「#{rest.name}」<br/>
         
       p(style="font-size:3.5rem; color:#736F6E; margin-left: 0px;margin-right: 0px;line-height: 2em;margin-top: 20px;margin-bottom: 20px; text-align: center; font-weight: 900;").
                 
-        <i class="fa fa-phone"></i>：<a href="tel:#{shop.phone}" style="color: #987cb9;">#{shop.phone}</a><br/>
-
-        <i class="fa fa-location-arrow"></i>：<a href="#" onclick="openLocation(#{shop.lat},#{shop.lng},'#{shop.name}','#{shop.address}');return false;" style="color: #987cb9;">#{shop.address}</a>
-        
-      iframe(width="100%" id="mapPage" height="500px" frameborder=0 scrolling="no")  
+        <i class="fa fa-location-arrow"></i>：<a href="#" onclick="openLocation(#{rest.lat},#{rest.lng},'#{rest.name}','#{rest.address}');return false;" style="color: #987cb9;">#{rest.address}</a>
         
 
     

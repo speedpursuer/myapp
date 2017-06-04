@@ -9,34 +9,59 @@ var router = express.Router();
 //     next();
 // });
 
+function getShopIDFromDocID(docID) {
+    var divider = "_";
+    var firstIndex = docID.indexOf(divider);
+    var lastIndex = docID.lastIndexOf(divider);
+    // console.log("firstIndex: " + firstIndex);
+    // console.log("lastIndex: " + lastIndex);
+
+    return 'shop' + docID.substring(firstIndex,lastIndex);
+    // console.log("UUID: " + UUID);
+}
+
 /* GET home page. */
 router.get('/share/:id', function(req, res, next) {
     // console.log("id = " + req.params.id);
-    var serverURL = 'http://121.40.197.226:8000/eservice/';
+    var serverURL = 'http://121.40.197.226:8000/eservice/_all_docs?include_docs=true';
     // var docID = 'article_14a8f67e7501408d9dbbd90483c34d16_2017-05-02-15:24:39';
     var docID = req.params.id;
-    var uri = serverURL + docID;
+    // var uri = serverURL + docID;
     var auth = {
         'user': 'eservice_user',
         'pass': 'xiaodianzhang123'
     };
 
     request({
-            method: 'GET',
-            uri: uri,
-            auth: auth
+            method: 'POST',
+            uri: serverURL,
+            auth: auth,
+            json: {keys: [docID, getShopIDFromDocID(docID)]}
         },
         function(error, response, body) {
 
             if (error) {
+                console.log(error);
                 next(error);                
             }
 
             // console.log("Body = " + body);
 
-            var doc = JSON.parse(body);
+            // console.log("response = " + response);
 
-            if(doc.error) {
+            // console.log(body.rows);
+
+            // var doc = JSON.parse('{"rows":[{"key":"shop_b2db86caf5a74b4d8a645d61ce5ede9c","id":"shop_b2db86caf5a74b4d8a645d61ce5ede9c","value":{"rev":"1-aba616e905c320d45fcfd1a127abf60d"},"doc":{"_id":"shop_b2db86caf5a74b4d8a645d61ce5ede9c","_rev":"1-aba616e905c320d45fcfd1a127abf60d","address":"上海市闵行区申长路688号虹桥天地B2","avatarURL":"b2db86caf5a74b4d8a645d61ce5ede9c/avatar","isFromLocal":true,"lat":31.1931,"lng":121.315,"name":"美车堂","owner":"user_b2db86caf5a74b4d8a645d61ce5ede9c","phone":"50339999","type":"shop"}},{"key":"article_cacd701d09ba43a7940d31261c5cfd4e_2017-05-08-15:41:13","id":"article_cacd701d09ba43a7940d31261c5cfd4e_2017-05-08-15:41:13","value":{"rev":"3-968bbb3329f914241cc194d401820bbf"},"doc":{"_id":"article_cacd701d09ba43a7940d31261c5cfd4e_2017-05-08-15:41:13","_rev":"3-968bbb3329f914241cc194d401820bbf","category":"默认分类","entryList":[{"desc":"","height":1104,"imageURL":"cacd701d09ba43a7940d31261c5cfd4e/1480abaa110a16b8af059b64ab0175fc","uploaded":true,"width":828}],"owner":"user_cacd701d09ba43a7940d31261c5cfd4e","thumbURL":"cacd701d09ba43a7940d31261c5cfd4e/1480abaa110a16b8af059b64ab0175fc","title":"宝宝2","type":"article"}}],"total_rows":2,"update_seq":169}');
+            
+            // console.log("doc = " + doc);
+
+            // console.log(doc.rows);
+
+            // return;
+
+            var list = body.rows;
+
+            if(list.length == 0 || (list.length > 0 && list[0].id != docID)) {
                 // res.send('此页面不存在');
                 res.render('error', {
                     message: '此页面不存在',
@@ -45,27 +70,37 @@ router.get('/share/:id', function(req, res, next) {
                 return;
             }
 
-            // console.log(doc);
+            var doc = list[0].doc;
+            var shop = list.length == 2? list[1].doc: null;
 
-            // var newList = [];
-
-            // var limit = doc.entryList.length;
-
-            // for(i in doc.entryList) {
-            // for(var i=0; i<limit; i++) {
-            //     var newItem = {
-            //         "url": "http://eserviceimg.oss-cn-shanghai.aliyuncs.com/" + doc.entryList[i].imageURL + ".jpg",
-            //         "desc": doc.entryList[i].desc
-            //     };
-            //     newList.push(newItem);
-            // }
-
-            res.render('index', {
-                thumb: 'http://eserviceimg.oss-cn-shanghai.aliyuncs.com/'+doc.thumbURL+'.jpg',
-                url: req.protocol + '://' + 'www.carlub.cn' + req.originalUrl,
-		        title: doc.title,
-		        contents: doc.entryList
-		    });
+            if(doc.rest) {
+                res.render('food', {
+                    thumb: 'http://cdn.carlub.cn/'+doc.thumbURL+'.jpg',
+                    url: req.protocol + '://' + 'www.carlub.cn' + req.originalUrl,
+                    title: doc.title,
+                    contents: doc.entryList,
+                    rest: doc.rest
+                });
+            }else {
+                res.render('index', {
+                    thumb: 'http://cdn.carlub.cn/'+doc.thumbURL+'.jpg',
+                    url: req.protocol + '://' + 'www.carlub.cn' + req.originalUrl,
+                    title: doc.title,
+                    contents: doc.entryList,
+                    shopEnabled: doc.isShopEnabled,
+                    shop: shop
+                    // shop: {
+                    //     address: "上海市闵行区申长路688号虹桥天地B2",
+                    //     avatarURL: "b2db86caf5a74b4d8a645d61ce5ede9c/avatar",
+                    //     isFromLocal: false,
+                    //     lat: 31.1931,
+                    //     lng: 121.315,
+                    //     name: "美车堂",                    
+                    //     phone: "50339999",
+                    //     type: "shop"
+                    // }
+                });
+            }
         }
     );
 
