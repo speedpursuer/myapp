@@ -2,6 +2,8 @@ var express = require('express');
 var path = require('path');
 var request = require('request');
 var router = express.Router();
+var redis = require("redis"),
+    client = redis.createClient();
 
 // 没有挂载路径的中间件，通过该路由的每个请求都会执行该中间件
 // router.use(function(req, res, next) {
@@ -73,7 +75,8 @@ router.get('/share/:id', function(req, res, next) {
             var doc = list[0].doc;
             var shop = list.length == 2? list[1].doc: null;
 
-            if(doc.rest) {
+            // if(doc.rest) {
+            if(false) {
                 res.render('food', {
                     thumb: 'http://cdn.carlub.cn/'+doc.thumbURL+'.jpg',
                     url: req.protocol + '://' + 'www.carlub.cn' + req.originalUrl,
@@ -82,23 +85,41 @@ router.get('/share/:id', function(req, res, next) {
                     rest: doc.rest
                 });
             }else {
-                res.render('index', {
-                    thumb: 'http://cdn.carlub.cn/'+doc.thumbURL+'.jpg',
-                    url: req.protocol + '://' + 'www.carlub.cn' + req.originalUrl,
-                    title: doc.title,
-                    contents: doc.entryList,
-                    shopEnabled: doc.isShopEnabled,
-                    shop: shop
-                    // shop: {
-                    //     address: "上海市闵行区申长路688号虹桥天地B2",
-                    //     avatarURL: "b2db86caf5a74b4d8a645d61ce5ede9c/avatar",
-                    //     isFromLocal: false,
-                    //     lat: 31.1931,
-                    //     lng: 121.315,
-                    //     name: "美车堂",                    
-                    //     phone: "50339999",
-                    //     type: "shop"
+                client.get(doc._id, function (err, reply) {
+                    var count = 0;
+                    if(!err && reply) {
+                        count = reply;
+                    }
+
+                    var title = doc.title.replace(/\n\r?/g, ' ');
+
+                    // for(entry in doc.entryList) {
+                    //     if(entry.desc) {
+                    //         entry.desc = entry.desc.replace(/\n\r?/g, '<br />');
+                    //     }
                     // }
+                    client.incr(doc._id);
+
+                    res.render('index', {
+                        articleID: doc._id,
+                        thumb: 'http://cdn.carlub.cn/'+doc.thumbURL+'.jpg',
+                        url: req.protocol + '://' + 'www.carlub.cn' + req.originalUrl,
+                        title: title,
+                        contents: doc.entryList,
+                        shopEnabled: doc.isShopEnabled,
+                        shop: shop,
+                        count: count
+                        // shop: {
+                        //     address: "上海市闵行区申长路688号虹桥天地B2",
+                        //     avatarURL: "b2db86caf5a74b4d8a645d61ce5ede9c/avatar",
+                        //     isFromLocal: false,
+                        //     lat: 31.1931,
+                        //     lng: 121.315,
+                        //     name: "美车堂",                    
+                        //     phone: "50339999",
+                        //     type: "shop"
+                        // }
+                    });      
                 });
             }
         }
@@ -123,11 +144,36 @@ router.get('/share/:id', function(req, res, next) {
     // res.sendFile(path.join(__dirname, '../public/html', 'article.html'));
 });
 
-// /user 节点接受 PUT 请求
-// router.get('/user', function(req, res) {
-//     res.send('Got a PUT request at /user');
-// });
+router.get('/visit/:id', function(req, res) {
+    var docID = req.params.id;
+    client.incr(docID, function(err, reply) {
+        // reply is null when the key is missing
+        var result = {};
+        if(err) {
+            result.err = true;
+        }else {
+            result.docID = docID
+        }
+        res.json(result);
+    });    
+});
 
+router.get('/count/:id', function(req, res) {
+    var docID = req.params.id;
+    client.get(docID, function (err, reply) {
+        var count = 0;
+        if(!err && reply) {
+            count = reply;
+        }
+        // console.log("reply: " + reply);
+        // if(err || reply.toString())
+        res.json({count: count});        
+    });    
+});
+
+client.on("error", function (err) {
+    console.log("Error " + err);
+});
 
 // var cb0 = function(req, res, next) {
 //     console.log('CB0');

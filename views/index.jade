@@ -28,7 +28,7 @@ block content
             jsApiList: ['onMenuShareTimeline', 'onMenuShareAppMessage', 'openLocation']
           });
         }
-      });    
+      });      
     });
 
     wx.ready(function(e, x){      
@@ -74,27 +74,27 @@ block content
       });
     }
 
-  div(style="padding:30px 12px 30px 12px;")
+  div(style="padding:0px 0px 15px 0px;")
   
-   div(style="font-size:86px; color:#987cb9; font-weight:bold; text-align:center;")
-    h1(style="margin-bottom: 30px; margin-top: 0px; font-size: 0.8em;")=title
+   div(style="font-weight:bold; text-align:center;font-size:13px;")
+    h1(style="margin-bottom: 0px; margin-top: 20px;")=title
   
-   div(style="text-align:center;line-height: 8px;")
+   div(style="text-align:center;line-height: 8px; margin-top:10px;")
   
-    div(style="display:inline-block; border-top:solid 8px #987cb9; width:20%;")          
+    div(style="display:inline-block; border-top:solid 2px #736F6E; width:30%;")          
   
-    div(style="display:inline-block; border-top:solid 8px #444; width:20%; margin-left:10px;")
+    div(style="display:inline-block; border-top:solid 2px #736F6E; width:30%; margin-left:10px;")
 
   each content, i in contents
 
-   div(style="border: 0px none; padding: 0px; position: relative; padding-bottom:12px; padding-left:12px; padding-right:12px; padding-top:8px;")
+   div(style="border: 0px none; padding: 0px; position: relative; padding-bottom:6px; padding-left:0px; padding-right:0px; padding-top:4px;")
    
     div(style="height:auto; overflow:hidden; padding-bottom:0px;")    
    
      div(style="width:100%;")
 
       if (content.desc)
-        p(style="font-size:3.5rem; color:#736F6E; margin-left: 0px;margin-right: 0px;line-height: 2em;margin-top: 10px;margin-bottom: 0px;")=content.desc
+        p(style="font-size:14px; color:#000; margin-left: 0px;margin-right: 0px;line-height: 25px;margin-top: 10px;margin-bottom: 0px;")=content.desc
 
       if (content.imageURL)
         img(style="width:100%; display:block;", src='http://cdn.carlub.cn/'+content.imageURL+'.jpg')       
@@ -116,26 +116,27 @@ block content
         $("#mapPage").attr("src", "http://apis.map.qq.com/ws/staticmap/v2/?center=#{shop.lat},#{shop.lng}&zoom=11&markers=size:large|color:red|#{shop.lat},#{shop.lng}&key=EEQBZ-YXG3D-AL643-PPLVA-2GRW5-K6BQY&scale=2&size="+mapWidth+"*"+mapHeight);
       }
 
-    div(style="text-align:center;line-height: 8px; margin-top: 4em; margin-bottom: 2.5em;")
+    div(style="text-align:center; margin-top: 20px; margin-bottom: 0px;")
   
-      div(style="display:inline-block; border-top:solid 8px #987cb9; width:20%;")          
-  
-      div(style="display:inline-block; border-top:solid 8px #444; width:20%; margin-left:10px;")
+      div(style="display:inline-block; border-top:solid 2px #736F6E; width:15%; vertical-align:middle;")          
+      
+      P(style="display:inline-block; font-size:20px; color:#000; margin-left: 0px; text-align: center; font-weight: 900; max-width:60%; margin-top:10px; margin-bottom:10px").
+        「#{shop.name}」
 
-    div(style="border: 0px none; padding: 0px; position: relative; padding-bottom:12px; padding-left:12px; padding-right:12px; padding-top:12px;")
+      div(style="display:inline-block; border-top:solid 2px #736F6E; width:15%; margin-left:0px; vertical-align:middle;")
+
+    div(style="border: 0px none; padding: 0px; position: relative; padding-bottom:0px; padding-left:0px; padding-right:0px; padding-top:12px;")
 
       img(style="width:100%; display:block;" src='http://cdn.carlub.cn/'+shop.avatarURL+'.jpg')
-
-      p(style="font-size:3.5rem; color:#736F6E; margin-left: 0px;margin-right: 0px;line-height: 2em;margin-top: 20px;margin-bottom: 20px; text-align: center; font-weight: 900;").
-        「#{shop.name}」<br/>
         
-      p(style="font-size:3.5rem; color:#736F6E; margin-left: 0px;margin-right: 0px;line-height: 2em;margin-top: 20px;margin-bottom: 20px; text-align: center; font-weight: 900;").
+      p(style="font-size:16px; color:#736F6E; margin-left: 0px;margin-right: 0px;line-height: 30px;margin-top: 20px;margin-bottom: 0px; text-align: center; font-weight: 900;").
                 
-        <i class="fa fa-phone"></i>：<a href="tel:#{shop.phone}" style="color: #987cb9;">#{shop.phone}</a><br/>
+        <i class="fa fa-phone"></i>：<a href="tel:#{shop.phone}" style="color: #607fa6; text-decoration:blink">#{shop.phone}</a><br/>
 
-        <i class="fa fa-location-arrow"></i>：<a href="#" onclick="openLocation(#{shop.lat},#{shop.lng},'#{shop.name}','#{shop.address}');return false;" style="color: #987cb9;">#{shop.address}</a>
-        
-      iframe(width="100%" id="mapPage" height="500px" frameborder=0 scrolling="no")  
-        
+        <i class="fa fa-location-arrow"></i>：<a href="#" onclick="openLocation(#{shop.lat},#{shop.lng},'#{shop.name}','#{shop.address}');return false;" style="color:#607fa6; text-decoration:blink">#{shop.address}</a>
 
+  div(style="border: 0px none; padding: 0px; position: relative; padding-bottom:0px; padding-left:0px; padding-right:0px; padding-top:20px;")
+    
+      p(style="font-size:15px; color:#736F6E; margin-left: 0px;margin-right: 0px;line-height: 20px;margin-top: 0px;margin-bottom: 0px; font-weight: 500;").
+        阅读 #{count} 次
     
