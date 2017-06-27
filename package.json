@@ -12,6 +12,7 @@
     "express": "~4.15.2",
     "jade": "~1.11.0",
     "jssha": "^1.5.0",
+    "moment": "^2.18.1",
     "morgan": "~1.8.1",
     "multipart-raw-parser": "^0.6.1",
     "redis": "^2.7.1",

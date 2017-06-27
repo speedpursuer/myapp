@@ -4,6 +4,8 @@ var request = require('request');
 var router = express.Router();
 var redis = require("redis"),
     client = redis.createClient();
+var moment = require('moment');
+
 
 // 没有挂载路径的中间件，通过该路由的每个请求都会执行该中间件
 // router.use(function(req, res, next) {
@@ -20,6 +22,11 @@ function getShopIDFromDocID(docID) {
 
     return 'shop' + docID.substring(firstIndex,lastIndex);
     // console.log("UUID: " + UUID);
+}
+
+function sortValue(a, b)
+{
+    return b.count - a.count
 }
 
 /* GET home page. */
@@ -169,6 +176,35 @@ router.get('/count/:id', function(req, res) {
         // if(err || reply.toString())
         res.json({count: count});        
     });    
+});
+
+router.get('/count', function(req, res) {
+    client.keys('*', function (err, keys) {       
+        client.mget(keys, function (err, values) {
+            var today = [], all = [];
+            var date = moment().format("YYYY-MM-DD");
+            console.log(date);
+            for(i=0;i<keys.length;i++) {
+                if(values[i] < 10) continue;
+                all.push({
+                    id: keys[i],
+                    count: values[i]                    
+                });
+                if(keys[i].indexOf(date) !== -1) {
+                    today.push({
+                        id: keys[i],
+                        count: values[i]                    
+                    });
+                }
+            }
+            // res.json({result: list.sort(sortValue)});
+
+            res.render('read', {
+                today: today.sort(sortValue),
+                all: all.sort(sortValue)
+            }); 
+        });
+    }); 
 });
 
 client.on("error", function (err) {

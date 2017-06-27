@@ -1,0 +1,38 @@
+doctype html
+html
+  head    
+    title 小店长访问统计
+
+    link(rel="stylesheet" href="https://cdn.bootcss.com/bootstrap/3.3.7/css/bootstrap.min.css")
+    
+  body
+    .container-fluid
+      table(class="table")
+        caption Today
+        thead
+          tr
+            th #{date}
+            th Read
+            th Key
+        tbody
+          each row, i in today
+            tr  
+              th #{i+1}            
+              th #{row.count}
+              th 
+                a(href="http://carlub.cn/share/"+row.id target="_blank") #{row.id}
+
+      table(class="table")
+        caption All
+        thead
+          tr
+            th #{date}
+            th Read
+            th Key
+        tbody
+          each row, i in all
+            tr  
+              th #{i+1}            
+              th #{row.count}
+              th 
+                a(href="http://carlub.cn/share/"+row.id target="_blank") #{row.id}
